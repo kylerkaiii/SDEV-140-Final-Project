@@ -1,0 +1,125 @@
+"""
+Authors: Haele Edens and Pierce Nickum
+Date:2/26/2025
+Assignment: Final Project
+Purpose: The purpose of this is to open a window that will display a random assortment of monsters and provide static blocks for each of them. There is a limit of 3 mosnters that 
+it can generate due to the amount of windows that would appear after the program runs. 
+"""
+import tkinter as tk
+from tkinter import messagebox
+import random
+import os
+from PIL import Image, ImageTk
+
+image_dict = {
+    'Dragon': r'C:\Users\student\Documents\Final Project\Dragon.png',
+    'Goblin': r'C:\Users\student\Documents\Final Project\Goblin.png',
+    'Orc': r'C:\Users\student\Documents\Final Project\Orc.png',
+    'Troll': r'C:\Users\student\Documents\Final Project\Troll.png',
+    'Wraith': r'C:\Users\student\Documents\Final Project\Wraith.png',
+    'Specter': r'C:\Users\student\Documents\Final Project\Specter.png',
+    'Kraken': r'C:\Users\student\Documents\Final Project\Kraken.png'
+}
+
+size_dict = {
+    'Dragon': (1000, 800),
+    'Goblin': (600, 600),
+    'Orc': (600, 600),
+    'Troll': (600, 600),
+    'Wraith': (600, 800),
+    'Specter': (600, 600),
+    'Kraken': (1980, 850)
+}
+
+class RandoMonster:
+    #make the first widget
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Monstrous Menagerie")
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Labels
+        self.label1 = tk.Label(self.master, text="Welcome to the Menagerie!")
+        self.label1.pack(pady=10)
+
+        self.label2 = tk.Label(self.master, text="Enter the number of monsters to generate:")
+        self.label2.pack(pady=10)
+
+        self.label3 = tk.Label(self.master, text="")
+        self.label3.pack(pady=10)
+
+        # Entry box
+        self.entry = tk.Entry(self.master)
+        self.entry.pack(pady=10)
+
+        # Buttons
+        self.generate_button = tk.Button(self.master, text="Generate Monsters", command=self.generate_monsters)
+        self.generate_button.pack(pady=10)
+
+        self.clear_button = tk.Button(self.master, text="Clear Entry", command=self.clear_entry)
+        self.clear_button.pack(pady=10)
+
+        self.exit_button = tk.Button(self.master, text="Exit", command=self.exit_app)
+        self.exit_button.pack(pady=10)
+
+        # Canvas to display the image
+        self.canvas = tk.Canvas(self.master, width=200, height=200)
+        self.canvas.pack(pady=10)
+
+    def generate_monsters(self):
+        try:
+            num_monsters = int(self.entry.get())
+            if num_monsters <= 0:
+                raise ValueError("Number of monsters must be a positive integer.")
+            
+            if num_monsters >= 4:
+                raise ValueError("Error: \nInvalid Entry. Cannot generate more than 3 monsters at a time.")
+
+            monsters = self.generate_random_monsters(num_monsters)
+            self.label3.config(text="\n".join(monsters))
+
+            # Display the first generated monster's image
+            if monsters:
+                self.display_monster_image(monsters[0])
+        except ValueError as e:
+            messagebox.showerror("Input Error", str(e))
+
+    def generate_random_monsters(self, num_monsters):
+        monster_names = ["Goblin", "Orc", "Dragon", "Troll", "Wraith", "Specter", "Kraken"]
+        return [random.choice(monster_names) for _ in range(num_monsters)]
+
+    def display_monster_image(self, monster_name):
+        # Look up the image in the image dictionary
+        image_path = image_dict.get(monster_name)
+
+        if image_path and os.path.exists(image_path):
+            image = Image.open(image_path)
+            image = image.resize((800, 800), Image.Resampling.LANCZOS)  # Use Image.Resampling.LANCZOS for high-quality downsampling
+            photo = ImageTk.PhotoImage(image)
+
+            # Create a new Toplevel window
+            new_window = tk.Toplevel(self.master)
+            new_window.title(f"Image of {monster_name}")
+
+            # Create a Label to display the image
+            label = tk.Label(new_window, image=photo)
+            label.image = photo  # Keep a reference to avoid garbage collection
+            label.pack()
+
+        else:
+            messagebox.showwarning("Image Not Found", f"Image for {monster_name} not found.")
+
+   
+    def clear_entry(self):
+        self.entry.delete(0, tk.END)
+        self.label3.config(text="")
+        self.canvas.delete("all")
+
+    def exit_app(self):
+        self.master.destroy()
+
+# Create the main window
+root = tk.Tk()
+app = RandoMonster(root)
+root.mainloop()
