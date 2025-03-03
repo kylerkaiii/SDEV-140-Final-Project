@@ -5,22 +5,27 @@ Assignment: Final Project
 Purpose: The purpose of this is to open a window that will display a random assortment of monsters and provide static blocks for each of them. There is a limit of 3 mosnters that 
 it can generate due to the amount of windows that would appear after the program runs. 
 """
+
+#These imports are to help python display the text boxes, windows, and monster pictures
+
 import tkinter as tk
 from tkinter import messagebox
 import random
 import os
 from PIL import Image, ImageTk
 
+#this is the image directory that tells the code exactly where to pull the file from to display as the image of a monster
 image_dict = {
-    'Dragon': r'C:\Users\student\Documents\Final Project\Dragon.png',
-    'Goblin': r'C:\Users\student\Documents\Final Project\Goblin.png',
-    'Orc': r'C:\Users\student\Documents\Final Project\Orc.png',
-    'Troll': r'C:\Users\student\Documents\Final Project\Troll.png',
-    'Wraith': r'C:\Users\student\Documents\Final Project\Wraith.png',
-    'Specter': r'C:\Users\student\Documents\Final Project\Specter.png',
-    'Kraken': r'C:\Users\student\Documents\Final Project\Kraken.png'
+    'Dragon': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Dragon.png',
+    'Goblin': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Goblin.png',
+    'Orc': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Orc.png',
+    'Troll': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Troll.png',
+    'Wraith': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Wraith.png',
+    'Specter': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Specter.png',
+    'Kraken': r'C:\Users\hajor\OneDrive\Documents\Ivy Tech\SDEV 140\Final Project\Final Project\Final Project\Kraken.png'
 }
 
+#resize pictures to make them legible and easier to view
 size_dict = {
     'Dragon': (1000, 800),
     'Goblin': (600, 600),
@@ -31,6 +36,7 @@ size_dict = {
     'Kraken': (1980, 850)
 }
 
+#this is the class for the Random Monster Generator
 class RandoMonster:
     #make the first widget
     def __init__(self, master):
@@ -69,10 +75,12 @@ class RandoMonster:
 
     def generate_monsters(self):
         try:
+            #validation to make sure the entry is positive
             num_monsters = int(self.entry.get())
             if num_monsters <= 0:
                 raise ValueError("Number of monsters must be a positive integer.")
             
+            #validation to make sure a small and appropriate amount of monsters are generated
             if num_monsters >= 4:
                 raise ValueError("Error: \nInvalid Entry. Cannot generate more than 3 monsters at a time.")
 
@@ -85,6 +93,7 @@ class RandoMonster:
         except ValueError as e:
             messagebox.showerror("Input Error", str(e))
 
+    #module for the monster names that will populate the random name generation
     def generate_random_monsters(self, num_monsters):
         monster_names = ["Goblin", "Orc", "Dragon", "Troll", "Wraith", "Specter", "Kraken"]
         return [random.choice(monster_names) for _ in range(num_monsters)]
@@ -93,29 +102,32 @@ class RandoMonster:
         # Look up the image in the image dictionary
         image_path = image_dict.get(monster_name)
 
+        #this was old code but I'm too afraid to change this
         if image_path and os.path.exists(image_path):
             image = Image.open(image_path)
-            image = image.resize((800, 800), Image.Resampling.LANCZOS)  # Use Image.Resampling.LANCZOS for high-quality downsampling
             photo = ImageTk.PhotoImage(image)
 
             # Create a new Toplevel window
             new_window = tk.Toplevel(self.master)
             new_window.title(f"Image of {monster_name}")
+            
 
             # Create a Label to display the image
             label = tk.Label(new_window, image=photo)
             label.image = photo  # Keep a reference to avoid garbage collection
             label.pack()
 
+        #error box to show that the image isn't found, if the image dictionary isn't working properly
         else:
             messagebox.showwarning("Image Not Found", f"Image for {monster_name} not found.")
 
-   
+    #clear the user input box of all data
     def clear_entry(self):
         self.entry.delete(0, tk.END)
         self.label3.config(text="")
         self.canvas.delete("all")
-
+    
+    #exit button 
     def exit_app(self):
         self.master.destroy()
 
@@ -123,3 +135,4 @@ class RandoMonster:
 root = tk.Tk()
 app = RandoMonster(root)
 root.mainloop()
+
